@@ -28,6 +28,8 @@ jobs:
           ini-values: error_reporting=E_ALL
           tools: composer:v2
           coverage: none
+        env:
+          TEST: test
 
       - name: Install dependencies
         uses: nick-invision/retry@v1
