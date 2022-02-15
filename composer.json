@@ -1,0 +1,43 @@
+{
+    "name": "wenjy/feishu-sdk",
+    "type": "project",
+    "description": "飞书SDK",
+    "keywords": ["FeiShu SDK", "飞书SDK"],
+    "license": "MIT",
+    "homepage": "https://github.com/wenjy/feishu-sdk",
+    "support": {
+        "issues": "https://github.com/wenjy/feishu-sdk/issues",
+        "source": "https://github.com/wenjy/feishu-sdk"
+    },
+    "require": {
+        "php": "^7.4|^8.0",
+        "guzzlehttp/guzzle": "^7.0.1"
+    },
+    "require-dev": {
+        "fakerphp/faker": "^1.9.1",
+        "mockery/mockery": "^1.4.4",
+        "phpunit/phpunit": "^9.5.10"
+    },
+    "autoload": {
+        "psr-4": {
+            "FeiShu\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+    },
+    "extra": {
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "composer/package-versions-deprecated": true
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
