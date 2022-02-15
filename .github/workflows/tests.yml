@@ -28,6 +28,7 @@ jobs:
           ini-values: error_reporting=E_ALL
           tools: composer:v2
           coverage: none
+
       - name: Install dependencies
         uses: nick-invision/retry@v1
         with:
@@ -35,5 +36,5 @@ jobs:
           max_attempts: 5
           command: composer update --${{ matrix.stability }} --prefer-dist --no-interaction --no-progress
 
-        - name: Execute tests
-          run: vendor/bin/phpunit
+      - name: Execute tests
+        run: vendor/bin/phpunit
