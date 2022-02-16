@@ -1,4 +1,7 @@
 ## 简介
+
+内核代码架构来自：（[https://github.com/w7corp/easywechat](https://github.com/w7corp/easywechat)）
+
 飞书 ([https://feishu.cn](https://feishu.cn)) 服务接口 Sdk.
 
 ## 文档
