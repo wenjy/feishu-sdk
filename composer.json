@@ -34,7 +34,10 @@
     "autoload": {
         "psr-4": {
             "FeiShu\\": "src/"
-        }
+        },
+        "files": [
+            "src/Kernel/Helpers.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {
