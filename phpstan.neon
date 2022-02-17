@@ -4,3 +4,9 @@ parameters:
         - src
     inferPrivatePropertyTypeFromConstructor: true
     ignoreErrors:
+       - '#Unsafe usage of new static\(\).#'
+       - '#Psr.*Exception is not subtype of Throwable#'
+       - '#Method FeiShu\\Kernel\\Support\\Collection::__set_state\(\) should return object but returns array#'
+       - '#Instantiated class Symfony\\Component\\Cache\\Simple\\FilesystemCache not found.#'
+       - '#Method (.*?)::createDefaultCache\(\) should return Psr\\SimpleCache\\CacheInterface but returns Symfony\\Component\\Cache\\Simple\\FilesystemCache.#'
+

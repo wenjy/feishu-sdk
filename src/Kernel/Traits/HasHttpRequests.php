@@ -4,20 +4,19 @@ namespace FeiShu\Kernel\Traits;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\HandlerStack;
 use Psr\Http\Message\ResponseInterface;
 
 /**
  * Trait HasHttpRequests.
- *
- * @author overtrue <i@overtrue.me>
  */
 trait HasHttpRequests
 {
     use ResponseCastable;
 
     /**
-     * @var \GuzzleHttp\ClientInterface
+     * @var ClientInterface
      */
     protected $httpClient;
 
@@ -27,7 +26,7 @@ trait HasHttpRequests
     protected $middlewares = [];
 
     /**
-     * @var \GuzzleHttp\HandlerStack
+     * @var HandlerStack
      */
     protected $handlerStack;
 
@@ -63,7 +62,7 @@ trait HasHttpRequests
     /**
      * Set GuzzleHttp\Client.
      *
-     * @param \GuzzleHttp\ClientInterface $httpClient
+     * @param ClientInterface $httpClient
      *
      * @return $this
      */
@@ -96,7 +95,7 @@ trait HasHttpRequests
      * Add a middleware.
      *
      * @param callable $middleware
-     * @param string   $name
+     * @param string|null $name
      *
      * @return $this
      */
@@ -128,9 +127,9 @@ trait HasHttpRequests
      * @param string $method
      * @param array  $options
      *
-     * @return \Psr\Http\Message\ResponseInterface
+     * @return ResponseInterface
      *
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws GuzzleException
      */
     public function request($url, $method = 'GET', $options = []): ResponseInterface
     {
@@ -151,7 +150,7 @@ trait HasHttpRequests
     }
 
     /**
-     * @param \GuzzleHttp\HandlerStack $handlerStack
+     * @param HandlerStack $handlerStack
      *
      * @return $this
      */
@@ -165,7 +164,7 @@ trait HasHttpRequests
     /**
      * Build a handler stack.
      *
-     * @return \GuzzleHttp\HandlerStack
+     * @return HandlerStack
      */
     public function getHandlerStack(): HandlerStack
     {
@@ -190,7 +189,7 @@ trait HasHttpRequests
     protected function fixJsonIssue(array $options): array
     {
         if (isset($options['json']) && is_array($options['json'])) {
-            $options['headers'] = array_merge($options['headers'] ?? [], ['Content-Type' => 'application/json']);
+            $options['headers'] = array_merge($options['headers'] ?? [], ['Content-Type' => 'application/json; charset=utf-8']);
 
             if (empty($options['json'])) {
                 $options['body'] = \GuzzleHttp\json_encode($options['json'], JSON_FORCE_OBJECT);

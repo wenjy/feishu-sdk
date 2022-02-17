@@ -31,7 +31,7 @@ abstract class AccessToken implements AccessTokenInterface
     /**
      * @var string
      */
-    protected $requestMethod = 'GET';
+    protected $requestMethod = 'POST';
 
     /**
      * @var string
@@ -51,7 +51,7 @@ abstract class AccessToken implements AccessTokenInterface
     /**
      * @var string
      */
-    protected $tokenKey = 'access_token';
+    protected $tokenKey = 'app_access_token';
 
     /**
      * @var string
@@ -80,7 +80,7 @@ abstract class AccessToken implements AccessTokenInterface
      * @throws PsrInvalidArgumentException
      * @throws InvalidArgumentException
      * @throws RuntimeException
-     * @throws GuzzleException
+     * @throws GuzzleException|InvalidConfigException
      */
     public function getRefreshedToken(): array
     {
@@ -97,6 +97,7 @@ abstract class AccessToken implements AccessTokenInterface
      * @throws InvalidArgumentException
      * @throws RuntimeException
      * @throws GuzzleException
+     * @throws InvalidConfigException
      */
     public function getToken(bool $refresh = false): array
     {
@@ -110,7 +111,7 @@ abstract class AccessToken implements AccessTokenInterface
         /** @var array $token */
         $token = $this->requestToken($this->getCredentials(), true);
 
-        $this->setToken($token[$this->tokenKey], $token['expires_in'] ?? 7200);
+        $this->setToken($token[$this->tokenKey], $token['expire'] ?? 7200);
 
         $this->token = $token;
 
@@ -148,9 +149,10 @@ abstract class AccessToken implements AccessTokenInterface
      *
      * @throws HttpException
      * @throws PsrInvalidArgumentException
-     * @throws InvalidConfigException
      * @throws InvalidArgumentException
      * @throws RuntimeException
+     * @throws GuzzleException
+     * @throws InvalidConfigException
      */
     public function refresh(): AccessTokenInterface
     {
@@ -165,9 +167,10 @@ abstract class AccessToken implements AccessTokenInterface
      *
      * @return ResponseInterface|Collection|array|object|string
      *
+     * @throws GuzzleException
+     * @throws InvalidConfigException
      * @throws HttpException
      * @throws InvalidArgumentException
-     * @throws GuzzleException
      */
     public function requestToken(array $credentials, $toArray = false)
     {
@@ -190,9 +193,10 @@ abstract class AccessToken implements AccessTokenInterface
      *
      * @throws HttpException
      * @throws PsrInvalidArgumentException
-     * @throws InvalidConfigException
      * @throws InvalidArgumentException
      * @throws RuntimeException
+     * @throws GuzzleException
+     * @throws InvalidConfigException
      */
     public function applyToRequest(RequestInterface $request, array $requestOptions = []): RequestInterface
     {
@@ -237,9 +241,10 @@ abstract class AccessToken implements AccessTokenInterface
      *
      * @throws HttpException
      * @throws PsrInvalidArgumentException
-     * @throws InvalidConfigException
      * @throws InvalidArgumentException
      * @throws RuntimeException
+     * @throws GuzzleException
+     * @throws InvalidConfigException
      */
     protected function getQuery(): array
     {

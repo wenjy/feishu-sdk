@@ -23,8 +23,6 @@ use Throwable;
 
 /**
  * Class LogManager.
- *
- * @author overtrue <i@overtrue.me>
  */
 class LogManager implements LoggerInterface
 {

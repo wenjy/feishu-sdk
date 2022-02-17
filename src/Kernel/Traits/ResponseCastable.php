@@ -15,12 +15,12 @@ use Psr\Http\Message\ResponseInterface;
 trait ResponseCastable
 {
     /**
-     * @param \Psr\Http\Message\ResponseInterface $response
-     * @param string|null                         $type
+     * @param ResponseInterface $response
+     * @param string|null $type
      *
-     * @return array|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
+     * @return array|Collection|object|ResponseInterface|string
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
+     * @throws InvalidConfigException
      */
     protected function castResponseToType(ResponseInterface $response, $type = null)
     {
@@ -49,10 +49,10 @@ trait ResponseCastable
      * @param mixed       $response
      * @param string|null $type
      *
-     * @return array|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
+     * @return array|Collection|object|ResponseInterface|string
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
+     * @throws InvalidArgumentException
+     * @throws InvalidConfigException
      */
     protected function detectAndCastResponseToType($response, $type = null)
     {
