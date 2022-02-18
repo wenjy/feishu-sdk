@@ -83,7 +83,7 @@ trait Observable
     }
 
     /**
-     * @param string                                $condition
+     * @param string $condition
      * @param Closure|EventHandlerInterface|string $handler
      *
      * @return Clause
@@ -97,7 +97,7 @@ trait Observable
     }
 
     /**
-     * @param string                                $condition
+     * @param string $condition
      * @param Closure|EventHandlerInterface|string $handler
      *
      * @return Clause
@@ -112,7 +112,7 @@ trait Observable
 
     /**
      * @param string|int $event
-     * @param mixed      ...$payload
+     * @param mixed ...$payload
      *
      * @return mixed|null
      */
@@ -123,7 +123,7 @@ trait Observable
 
     /**
      * @param string|int $event
-     * @param mixed      ...$payload
+     * @param mixed ...$payload
      *
      * @return mixed|null
      */
@@ -190,8 +190,8 @@ trait Observable
 
         if (is_array($handler)) {
             return is_string($handler[0])
-                ? $handler[0].'::'.$handler[1]
-                : get_class($handler[0]).$handler[1];
+                ? $handler[0] . '::' . $handler[1]
+                : get_class($handler[0]) . $handler[1];
         }
 
         return spl_object_hash($handler);
@@ -199,7 +199,7 @@ trait Observable
 
     /**
      * @param callable $handler
-     * @param mixed    $payload
+     * @param mixed $payload
      *
      * @return mixed
      */
@@ -209,11 +209,11 @@ trait Observable
             return call_user_func_array($handler, [$payload]);
         } catch (\Exception $e) {
             if (property_exists($this, 'app') && $this->app instanceof ServiceContainer) {
-                $this->app['logger']->error($e->getCode().': '.$e->getMessage(), [
-                    'code' => $e->getCode(),
+                $this->app['logger']->error($e->getCode() . ': ' . $e->getMessage(), [
+                    'code'    => $e->getCode(),
                     'message' => $e->getMessage(),
-                    'file' => $e->getFile(),
-                    'line' => $e->getLine(),
+                    'file'    => $e->getFile(),
+                    'line'    => $e->getLine(),
                 ]);
             }
         }
@@ -239,7 +239,8 @@ trait Observable
             }
 
             if (!in_array(EventHandlerInterface::class, (new \ReflectionClass($handler))->getInterfaceNames(), true)) {
-                throw new InvalidArgumentException(sprintf('Class "%s" not an instance of "%s".', $handler, EventHandlerInterface::class));
+                throw new InvalidArgumentException(sprintf('Class "%s" not an instance of "%s".', $handler,
+                    EventHandlerInterface::class));
             }
 
             return function ($payload) use ($handler) {

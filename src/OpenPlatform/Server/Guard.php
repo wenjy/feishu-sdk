@@ -2,11 +2,12 @@
 
 namespace FeiShu\OpenPlatform\Server;
 
+use FeiShu\Kernel\Exceptions\BadRequestException;
+use FeiShu\Kernel\Exceptions\InvalidArgumentException;
+use FeiShu\Kernel\Exceptions\InvalidConfigException;
+use FeiShu\Kernel\Exceptions\RuntimeException;
 use FeiShu\Kernel\ServerGuard;
 use FeiShu\OpenPlatform\Server\Handlers\Authorized;
-use FeiShu\OpenPlatform\Server\Handlers\Unauthorized;
-use FeiShu\OpenPlatform\Server\Handlers\UpdateAuthorized;
-use FeiShu\OpenPlatform\Server\Handlers\VerifyTicketRefreshed;
 use Symfony\Component\HttpFoundation\Response;
 use function FeiShu\Kernel\data_get;
 
@@ -18,17 +19,14 @@ use function FeiShu\Kernel\data_get;
 class Guard extends ServerGuard
 {
     public const EVENT_AUTHORIZED = 'authorized';
-    public const EVENT_UNAUTHORIZED = 'unauthorized';
-    public const EVENT_UPDATE_AUTHORIZED = 'updateauthorized';
-    public const EVENT_COMPONENT_VERIFY_TICKET = 'component_verify_ticket';
-    public const EVENT_THIRD_FAST_REGISTERED = 'notify_third_fasteregister';
 
     /**
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @return Response
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\BadRequestException
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
+     * @throws BadRequestException
+     * @throws InvalidArgumentException
+     * @throws InvalidConfigException
+     * @throws RuntimeException
      */
     protected function resolve(): Response
     {
@@ -49,8 +47,5 @@ class Guard extends ServerGuard
     protected function registerHandlers()
     {
         $this->on(self::EVENT_AUTHORIZED, Authorized::class);
-        $this->on(self::EVENT_UNAUTHORIZED, Unauthorized::class);
-        $this->on(self::EVENT_UPDATE_AUTHORIZED, UpdateAuthorized::class);
-        $this->on(self::EVENT_COMPONENT_VERIFY_TICKET, VerifyTicketRefreshed::class);
     }
 }

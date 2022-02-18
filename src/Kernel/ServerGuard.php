@@ -2,14 +2,14 @@
 
 namespace FeiShu\Kernel;
 
+use Exception;
 use FeiShu\Kernel\Contracts\MessageInterface;
 use FeiShu\Kernel\Exceptions\BadRequestException;
 use FeiShu\Kernel\Exceptions\InvalidArgumentException;
+use FeiShu\Kernel\Exceptions\InvalidConfigException;
 use FeiShu\Kernel\Messages\Message;
-use FeiShu\Kernel\Messages\News;
-use FeiShu\Kernel\Messages\NewsItem;
-use FeiShu\Kernel\Messages\Raw as RawMessage;
 use FeiShu\Kernel\Messages\Text;
+use FeiShu\Kernel\Support\Collection;
 use FeiShu\Kernel\Support\XML;
 use FeiShu\Kernel\Traits\Observable;
 use FeiShu\Kernel\Traits\ResponseCastable;
@@ -17,11 +17,6 @@ use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class ServerGuard.
- *
- * 1. url 里的 signature 只是将 token+nonce+timestamp 得到的签名，只是用于验证当前请求的，在公众号环境下一直有
- * 2. 企业号消息发送时是没有的，因为固定为完全模式，所以 url 里不会存在 signature, 只有 msg_signature 用于解密消息的
- *
- * @author overtrue <i@overtrue.me>
  */
 class ServerGuard
 {
@@ -43,21 +38,10 @@ class ServerGuard
      */
     public const MESSAGE_TYPE_MAPPING = [
         'text' => Message::TEXT,
-        'image' => Message::IMAGE,
-        'voice' => Message::VOICE,
-        'video' => Message::VIDEO,
-        'shortvideo' => Message::SHORT_VIDEO,
-        'location' => Message::LOCATION,
-        'link' => Message::LINK,
-        'device_event' => Message::DEVICE_EVENT,
-        'device_text' => Message::DEVICE_TEXT,
-        'event' => Message::EVENT,
-        'file' => Message::FILE,
-        'miniprogrampage' => Message::MINIPROGRAM_PAGE,
     ];
 
     /**
-     * @var \FeiShu\Kernel\ServiceContainer
+     * @var ServiceContainer
      */
     protected $app;
 
@@ -66,15 +50,11 @@ class ServerGuard
      *
      * @codeCoverageIgnore
      *
-     * @param \FeiShu\Kernel\ServiceContainer $app
+     * @param ServiceContainer $app
      */
     public function __construct(ServiceContainer $app)
     {
         $this->app = $app;
-
-        foreach ($this->app->extension->observers() as $observer) {
-            call_user_func_array([$this, 'push'], $observer);
-        }
     }
 
     /**
@@ -83,16 +63,16 @@ class ServerGuard
      * @return Response
      *
      * @throws BadRequestException
-     * @throws \FeiShu\Kernel\Exceptions\InvalidArgumentException
-     * @throws \FeiShu\Kernel\Exceptions\InvalidConfigException
+     * @throws InvalidArgumentException
+     * @throws InvalidConfigException
      */
     public function serve(): Response
     {
         $this->app['logger']->debug('Request received:', [
-            'method' => $this->app['request']->getMethod(),
-            'uri' => $this->app['request']->getUri(),
+            'method'       => $this->app['request']->getMethod(),
+            'uri'          => $this->app['request']->getUri(),
             'content-type' => $this->app['request']->getContentType(),
-            'content' => $this->app['request']->getContent(),
+            'content'      => $this->app['request']->getContent(),
         ]);
 
         $response = $this->validate()->resolve();
@@ -105,7 +85,7 @@ class ServerGuard
     /**
      * @return $this
      *
-     * @throws \FeiShu\Kernel\Exceptions\BadRequestException
+     * @throws BadRequestException
      */
     public function validate()
     {
@@ -139,11 +119,11 @@ class ServerGuard
     /**
      * Get request message.
      *
-     * @return array|\FeiShu\Kernel\Support\Collection|object|string
+     * @return array|Collection|object|string
      *
      * @throws BadRequestException
-     * @throws \FeiShu\Kernel\Exceptions\InvalidArgumentException
-     * @throws \FeiShu\Kernel\Exceptions\InvalidConfigException
+     * @throws InvalidArgumentException
+     * @throws InvalidConfigException
      */
     public function getMessage()
     {
@@ -172,11 +152,11 @@ class ServerGuard
     /**
      * Resolve server request and return the response.
      *
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @return Response
      *
-     * @throws \FeiShu\Kernel\Exceptions\BadRequestException
-     * @throws \FeiShu\Kernel\Exceptions\InvalidArgumentException
-     * @throws \FeiShu\Kernel\Exceptions\InvalidConfigException
+     * @throws BadRequestException
+     * @throws InvalidArgumentException
+     * @throws InvalidConfigException
      */
     protected function resolve(): Response
     {
@@ -206,13 +186,13 @@ class ServerGuard
     }
 
     /**
-     * @param string                                                   $to
-     * @param string                                                   $from
-     * @param \FeiShu\Kernel\Contracts\MessageInterface|string|int $message
+     * @param string $to
+     * @param string $from
+     * @param MessageInterface|string|int $message
      *
      * @return string
      *
-     * @throws \FeiShu\Kernel\Exceptions\InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public function buildResponse(string $to, string $from, $message)
     {
@@ -220,16 +200,8 @@ class ServerGuard
             return self::SUCCESS_EMPTY_RESPONSE;
         }
 
-        if ($message instanceof RawMessage) {
-            return $message->get('content', self::SUCCESS_EMPTY_RESPONSE);
-        }
-
         if (is_string($message) || is_numeric($message)) {
-            $message = new Text((string) $message);
-        }
-
-        if (is_array($message) && reset($message) instanceof NewsItem) {
-            $message = new News($message);
+            $message = new Text((string)$message);
         }
 
         if (!($message instanceof Message)) {
@@ -244,9 +216,9 @@ class ServerGuard
      *
      * @return array
      *
-     * @throws \FeiShu\Kernel\Exceptions\BadRequestException
-     * @throws \FeiShu\Kernel\Exceptions\InvalidArgumentException
-     * @throws \FeiShu\Kernel\Exceptions\InvalidConfigException
+     * @throws BadRequestException
+     * @throws InvalidArgumentException
+     * @throws InvalidConfigException
      */
     protected function handleRequest(): array
     {
@@ -254,11 +226,12 @@ class ServerGuard
 
         $messageArray = $this->detectAndCastResponseToType($castedMessage, 'array');
 
-        $response = $this->dispatch(self::MESSAGE_TYPE_MAPPING[$messageArray['MsgType'] ?? $messageArray['msg_type'] ?? 'text'], $castedMessage);
+        $response = $this->dispatch(self::MESSAGE_TYPE_MAPPING[$messageArray['MsgType'] ?? $messageArray['msg_type'] ?? 'text'],
+            $castedMessage);
 
         return [
-            'to' => $messageArray['FromUserName'] ?? '',
-            'from' => $messageArray['ToUserName'] ?? '',
+            'to'       => $messageArray['FromUserName'] ?? '',
+            'from'     => $messageArray['ToUserName'] ?? '',
             'response' => $response,
         ];
     }
@@ -266,19 +239,19 @@ class ServerGuard
     /**
      * Build reply XML.
      *
-     * @param string                                        $to
-     * @param string                                        $from
-     * @param \FeiShu\Kernel\Contracts\MessageInterface $message
+     * @param string $to
+     * @param string $from
+     * @param MessageInterface $message
      *
      * @return string
      */
     protected function buildReply(string $to, string $from, MessageInterface $message): string
     {
         $prepends = [
-            'ToUserName' => $to,
+            'ToUserName'   => $to,
             'FromUserName' => $from,
-            'CreateTime' => time(),
-            'MsgType' => $message->getType(),
+            'CreateTime'   => time(),
+            'MsgType'      => $message->getType(),
         ];
 
         $response = $message->transformToXml($prepends);
@@ -310,7 +283,7 @@ class ServerGuard
      *
      * @return array
      *
-     * @throws \FeiShu\Kernel\Exceptions\BadRequestException
+     * @throws BadRequestException
      */
     protected function parseMessage($content)
     {
@@ -325,9 +298,10 @@ class ServerGuard
                 }
             }
 
-            return (array) $content;
-        } catch (\Exception $e) {
-            throw new BadRequestException(sprintf('Invalid message content:(%s) %s', $e->getCode(), $e->getMessage()), $e->getCode());
+            return (array)$content;
+        } catch (Exception $e) {
+            throw new BadRequestException(sprintf('Invalid message content:(%s) %s', $e->getCode(), $e->getMessage()),
+                $e->getCode());
         }
     }
 
