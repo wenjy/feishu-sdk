@@ -2,12 +2,10 @@
 
 namespace FeiShu;
 
-use FeiShu\BasicService\Application as BasicServiceApplication;
 use FeiShu\OpenPlatform\Application as OpenPlatformServiceApplication;
 use FeiShu\Kernel\ServiceContainer;
 
 /**
- * @method static BasicServiceApplication basicService(array $config)
  * @method static OpenPlatformServiceApplication openPlatform(array $config)
  */
 class Factory

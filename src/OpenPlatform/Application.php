@@ -21,6 +21,7 @@ class Application extends ServiceContainer
         Auth\ServiceProvider::class,
         OAuth\ServiceProvider::class,
         Contact\Departments\ServiceProvider::class,
+        Contact\Users\ServiceProvider::class,
         Approval\Instances\ServiceProvider::class
     ];
 }
