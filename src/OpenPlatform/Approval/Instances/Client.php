@@ -6,13 +6,14 @@
 namespace FeiShu\OpenPlatform\Approval\Instances;
 
 use FeiShu\Kernel\BaseClient;
+use FeiShu\Kernel\Exceptions\InvalidArgumentException;
 use FeiShu\Kernel\Exceptions\InvalidConfigException;
 use FeiShu\Kernel\Support\Collection;
 use GuzzleHttp\Exception\GuzzleException;
 use Psr\Http\Message\ResponseInterface;
 
 /**
- * Departments Client
+ * instance Client
  */
 class Client extends BaseClient
 {
@@ -54,5 +55,33 @@ class Client extends BaseClient
             $params['open_id'] = $openId;
         }
         return $this->httpPostJson($this->endpoint . '/get', $params);
+    }
+
+    /**
+     * 搜索审批实例接口
+     * @param string $userId
+     * @param string $approvalCode
+     * @param string $instanceCode
+     * @return array|Collection|object|ResponseInterface|string
+     * @throws GuzzleException
+     * @throws InvalidConfigException
+     * @throws InvalidArgumentException
+     */
+    public function searchInstance(string $userId = '', string $approvalCode = '', string $instanceCode = '')
+    {
+        $params = [];
+        if ($userId) {
+            $params['user_id'] = $userId;
+        }
+        if ($approvalCode) {
+            $params['approval_code'] = $approvalCode;
+        }
+        if ($instanceCode) {
+            $params['instance_code'] = $instanceCode;
+        }
+        if (empty($params)) {
+            throw new InvalidArgumentException('Parameters cannot all be empty');
+        }
+        return $this->httpPostJson($this->endpoint . '/search', $params);
     }
 }

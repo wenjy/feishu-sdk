@@ -22,6 +22,7 @@ class Application extends ServiceContainer
         OAuth\ServiceProvider::class,
         Contact\Departments\ServiceProvider::class,
         Contact\Users\ServiceProvider::class,
-        Approval\Instances\ServiceProvider::class
+        Approval\Instances\ServiceProvider::class,
+        Approval\Subscribe\ServiceProvider::class
     ];
 }
