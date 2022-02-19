@@ -210,10 +210,10 @@ trait Observable
         } catch (\Exception $e) {
             if (property_exists($this, 'app') && $this->app instanceof ServiceContainer) {
                 $this->app['logger']->error($e->getCode() . ': ' . $e->getMessage(), [
-                    'code'    => $e->getCode(),
+                    'code' => $e->getCode(),
                     'message' => $e->getMessage(),
-                    'file'    => $e->getFile(),
-                    'line'    => $e->getLine(),
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine(),
                 ]);
             }
         }
@@ -239,8 +239,11 @@ trait Observable
             }
 
             if (!in_array(EventHandlerInterface::class, (new \ReflectionClass($handler))->getInterfaceNames(), true)) {
-                throw new InvalidArgumentException(sprintf('Class "%s" not an instance of "%s".', $handler,
-                    EventHandlerInterface::class));
+                throw new InvalidArgumentException(sprintf(
+                    'Class "%s" not an instance of "%s".',
+                    $handler,
+                    EventHandlerInterface::class
+                ));
             }
 
             return function ($payload) use ($handler) {

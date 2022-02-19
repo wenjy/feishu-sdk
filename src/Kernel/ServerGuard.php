@@ -69,10 +69,10 @@ class ServerGuard
     public function serve(): Response
     {
         $this->app['logger']->debug('Request received:', [
-            'method'       => $this->app['request']->getMethod(),
-            'uri'          => $this->app['request']->getUri(),
+            'method' => $this->app['request']->getMethod(),
+            'uri' => $this->app['request']->getUri(),
             'content-type' => $this->app['request']->getContentType(),
-            'content'      => $this->app['request']->getContent(),
+            'content' => $this->app['request']->getContent(),
         ]);
 
         $response = $this->validate()->resolve();
@@ -226,12 +226,14 @@ class ServerGuard
 
         $messageArray = $this->detectAndCastResponseToType($castedMessage, 'array');
 
-        $response = $this->dispatch(self::MESSAGE_TYPE_MAPPING[$messageArray['MsgType'] ?? $messageArray['msg_type'] ?? 'text'],
-            $castedMessage);
+        $response = $this->dispatch(
+            self::MESSAGE_TYPE_MAPPING[$messageArray['MsgType'] ?? $messageArray['msg_type'] ?? 'text'],
+            $castedMessage
+        );
 
         return [
-            'to'       => $messageArray['FromUserName'] ?? '',
-            'from'     => $messageArray['ToUserName'] ?? '',
+            'to' => $messageArray['FromUserName'] ?? '',
+            'from' => $messageArray['ToUserName'] ?? '',
             'response' => $response,
         ];
     }
@@ -248,10 +250,10 @@ class ServerGuard
     protected function buildReply(string $to, string $from, MessageInterface $message): string
     {
         $prepends = [
-            'ToUserName'   => $to,
+            'ToUserName' => $to,
             'FromUserName' => $from,
-            'CreateTime'   => time(),
-            'MsgType'      => $message->getType(),
+            'CreateTime' => time(),
+            'MsgType' => $message->getType(),
         ];
 
         $response = $message->transformToXml($prepends);
@@ -300,8 +302,10 @@ class ServerGuard
 
             return (array)$content;
         } catch (Exception $e) {
-            throw new BadRequestException(sprintf('Invalid message content:(%s) %s', $e->getCode(), $e->getMessage()),
-                $e->getCode());
+            throw new BadRequestException(
+                sprintf('Invalid message content:(%s) %s', $e->getCode(), $e->getMessage()),
+                $e->getCode()
+            );
         }
     }
 

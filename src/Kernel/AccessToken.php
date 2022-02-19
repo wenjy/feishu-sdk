@@ -39,11 +39,6 @@ abstract class AccessToken implements AccessTokenInterface
     protected $endpointToGetToken;
 
     /**
-     * @var string
-     */
-    protected $queryName;
-
-    /**
      * @var array
      */
     protected $token;
@@ -200,11 +195,7 @@ abstract class AccessToken implements AccessTokenInterface
      */
     public function applyToRequest(RequestInterface $request, array $requestOptions = []): RequestInterface
     {
-        parse_str($request->getUri()->getQuery(), $query);
-
-        $query = http_build_query(array_merge($this->getQuery(), $query));
-
-        return $request->withUri($request->getUri()->withQuery($query));
+        return $request->withHeader('Authorization', 'Bearer ' . $this->getToken()[$this->tokenKey]);
     }
 
     /**
@@ -232,23 +223,6 @@ abstract class AccessToken implements AccessTokenInterface
     protected function getCacheKey()
     {
         return $this->cachePrefix.md5(json_encode($this->getCredentials()));
-    }
-
-    /**
-     * The request query will be used to add to the request.
-     *
-     * @return array
-     *
-     * @throws HttpException
-     * @throws PsrInvalidArgumentException
-     * @throws InvalidArgumentException
-     * @throws RuntimeException
-     * @throws GuzzleException
-     * @throws InvalidConfigException
-     */
-    protected function getQuery(): array
-    {
-        return [$this->queryName ?? $this->tokenKey => $this->getToken()[$this->tokenKey]];
     }
 
     /**

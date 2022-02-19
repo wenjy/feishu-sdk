@@ -17,8 +17,6 @@ use Psr\Log\LogLevel;
 
 /**
  * Class BaseClient.
- *
- * @author overtrue <i@overtrue.me>
  */
 class BaseClient
 {
